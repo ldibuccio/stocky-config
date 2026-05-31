@@ -37,8 +37,41 @@
   .subtitle {
     color: var(--dim);
     font-size: 13px;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
+
+  /* DEBUG PANEL */
+  .debug-panel {
+    background: #fffbe6;
+    border: 2px solid var(--warning);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .debug-title {
+    font-weight: 700;
+    color: var(--warning);
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .debug-row { margin: 3px 0; }
+  .debug-ok { color: var(--green); font-weight: 600; }
+  .debug-bad { color: var(--red); font-weight: 600; }
+  .debug-raw {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 6px;
+    margin-top: 6px;
+    word-break: break-all;
+    font-size: 11px;
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
   .section {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -69,10 +102,7 @@
     background: var(--bg);
     color: var(--text);
   }
-  input:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
+  input:focus { outline: none; border-color: var(--primary); }
   button {
     border: none;
     padding: 10px 16px;
@@ -83,7 +113,6 @@
     transition: opacity 0.15s;
   }
   button:hover { opacity: 0.85; }
-  button:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-primary { background: var(--primary); color: white; }
   .btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
   .btn-danger { background: var(--red); color: white; }
@@ -121,10 +150,7 @@
     color: var(--primary-dark);
     border-bottom-color: var(--primary);
   }
-  .tab-add {
-    color: var(--primary);
-    font-weight: 700;
-  }
+  .tab-add { color: var(--primary); font-weight: 700; }
 
   .portfolio-name-row {
     display: flex;
@@ -197,18 +223,18 @@
     z-index: 10;
   }
   .save-bar button { flex: 1; }
-
-  .empty-state {
-    text-align: center;
-    padding: 24px;
-    color: var(--dim);
-  }
 </style>
 </head>
 <body>
 
 <h1>Stocky Settings</h1>
 <div class="subtitle">Configurá tu API key y tus portfolios</div>
+
+<!-- DEBUG PANEL -->
+<div class="debug-panel">
+  <div class="debug-title">🔍 DEBUG INFO</div>
+  <div id="debugContent">Cargando...</div>
+</div>
 
 <div id="status" class="status"></div>
 
@@ -222,11 +248,8 @@
 <!-- PORTFOLIOS -->
 <div class="section">
   <div class="section-title">Portfolios</div>
-
   <div id="tabsContainer" class="tabs" style="display:none;"></div>
-
   <div id="portfolioEditor"></div>
-
   <div class="counter" id="globalCounter">0 / 20 tickers totales</div>
 </div>
 
@@ -246,21 +269,78 @@ let state = {
   activeIdx: 0
 };
 
+let debugInfo = {
+  hashReceived: false,
+  hashRawLength: 0,
+  hashRawSample: '',
+  parsedOK: false,
+  parseError: '',
+  apiKeyPresent: false,
+  portfoliosCount: 0,
+  totalTickers: 0,
+  hadOldFormat: false
+};
+
+function renderDebug() {
+  var html = '';
+  html += '<div class="debug-row">Hash recibido: <span class="' + (debugInfo.hashReceived ? 'debug-ok' : 'debug-bad') + '">' + (debugInfo.hashReceived ? 'SI' : 'NO') + '</span></div>';
+  if (debugInfo.hashReceived) {
+    html += '<div class="debug-row">Largo hash: ' + debugInfo.hashRawLength + ' chars</div>';
+    html += '<div class="debug-row">JSON parseo: <span class="' + (debugInfo.parsedOK ? 'debug-ok' : 'debug-bad') + '">' + (debugInfo.parsedOK ? 'OK' : 'FALLO') + '</span></div>';
+    if (debugInfo.parseError) {
+      html += '<div class="debug-row debug-bad">Error: ' + debugInfo.parseError + '</div>';
+    }
+  }
+  html += '<div class="debug-row">API key del JS: <span class="' + (debugInfo.apiKeyPresent ? 'debug-ok' : 'debug-bad') + '">' + (debugInfo.apiKeyPresent ? 'SI' : 'NO') + '</span></div>';
+  html += '<div class="debug-row">Portfolios del JS: ' + debugInfo.portfoliosCount + '</div>';
+  html += '<div class="debug-row">Tickers totales: ' + debugInfo.totalTickers + '</div>';
+  if (debugInfo.hadOldFormat) {
+    html += '<div class="debug-row debug-ok">Formato VIEJO detectado y migrado</div>';
+  }
+  if (debugInfo.hashRawSample) {
+    html += '<div class="debug-row">Hash sample:</div><div class="debug-raw">' + debugInfo.hashRawSample + '</div>';
+  }
+  document.getElementById('debugContent').innerHTML = html;
+}
+
 function loadFromHash() {
-  // Si vino del Pebble app via URL hash con config previa
   try {
     var hash = window.location.hash.replace('#', '');
-    if (!hash) return;
+    if (!hash) {
+      debugInfo.hashReceived = false;
+      return;
+    }
+    debugInfo.hashReceived = true;
+    debugInfo.hashRawLength = hash.length;
+    debugInfo.hashRawSample = hash.substring(0, 200) + (hash.length > 200 ? '...' : '');
+    
     var decoded = decodeURIComponent(hash);
     var parsed = JSON.parse(decoded);
-    if (parsed.apiKey) state.apiKey = parsed.apiKey;
+    debugInfo.parsedOK = true;
+    
+    if (parsed.apiKey) {
+      state.apiKey = parsed.apiKey;
+      debugInfo.apiKeyPresent = true;
+    }
     if (parsed.portfolios && Array.isArray(parsed.portfolios)) {
       state.portfolios = parsed.portfolios;
+      debugInfo.portfoliosCount = parsed.portfolios.length;
+      var tcount = 0;
+      parsed.portfolios.forEach(function(p) {
+        if (p.tickers) tcount += p.tickers.length;
+      });
+      debugInfo.totalTickers = tcount;
     } else if (parsed.portfolio && Array.isArray(parsed.portfolio)) {
-      // Migración: formato viejo, single portfolio
+      // Migración formato viejo
       state.portfolios = [{ name: 'Default', tickers: parsed.portfolio }];
+      debugInfo.hadOldFormat = true;
+      debugInfo.portfoliosCount = 1;
+      debugInfo.totalTickers = parsed.portfolio.length;
     }
-  } catch (e) {}
+  } catch (e) {
+    debugInfo.parsedOK = false;
+    debugInfo.parseError = e.message || String(e);
+  }
 }
 
 function ensureAtLeastOnePortfolio() {
@@ -284,13 +364,12 @@ function render() {
   renderTabs();
   renderEditor();
   renderCounter();
+  renderDebug();
 }
 
 function renderTabs() {
   var container = document.getElementById('tabsContainer');
-  // Tabs solo si hay 2+ portfolios
   if (state.portfolios.length < 2 && state.portfolios.length < MAX_PORTFOLIOS) {
-    // Mostramos al menos un botón "+ Nuevo" si hay 1 portfolio
     if (state.portfolios.length === 1) {
       container.style.display = 'flex';
       container.innerHTML = '';
@@ -334,7 +413,6 @@ function renderEditor() {
   
   editor.innerHTML = '';
   
-  // Nombre del portfolio + borrar
   var nameRow = document.createElement('div');
   nameRow.className = 'portfolio-name-row';
   
@@ -356,13 +434,11 @@ function renderEditor() {
   
   editor.appendChild(nameRow);
   
-  // Header de la grilla
   var header = document.createElement('div');
   header.className = 'ticker-header';
   header.innerHTML = '<div>Ticker</div><div>Shares</div><div>Avg Cost</div><div></div>';
   editor.appendChild(header);
   
-  // Tickers
   p.tickers.forEach(function(t, idx) {
     var row = document.createElement('div');
     row.className = 'ticker-row';
@@ -397,14 +473,12 @@ function renderEditor() {
     var removeBtn = document.createElement('button');
     removeBtn.className = 'btn-icon';
     removeBtn.innerHTML = '×';
-    removeBtn.title = 'Eliminar';
     removeBtn.onclick = function() { removeTicker(idx); };
     row.appendChild(removeBtn);
     
     editor.appendChild(row);
   });
   
-  // Botón agregar ticker
   var addBtn = document.createElement('button');
   addBtn.className = 'add-ticker-btn';
   addBtn.textContent = '+ Agregar ticker';
@@ -460,9 +534,7 @@ function showStatus(type, msg) {
   var status = document.getElementById('status');
   status.className = 'status show ' + type;
   status.textContent = msg;
-  setTimeout(function() {
-    status.classList.remove('show');
-  }, 4000);
+  setTimeout(function() { status.classList.remove('show'); }, 4000);
 }
 
 function validate() {
@@ -471,7 +543,6 @@ function validate() {
     showStatus('error', 'Falta la API key de Finnhub');
     return null;
   }
-  // Validar portfolios
   for (var i = 0; i < state.portfolios.length; i++) {
     var p = state.portfolios[i];
     if (!p.name || !p.name.trim()) {
@@ -509,7 +580,6 @@ function save() {
   var config = validate();
   if (!config) return;
   var payload = JSON.stringify(config);
-  // Devolver al Pebble via URL
   var url = 'pebblejs://close#' + encodeURIComponent(payload);
   document.location.href = url;
 }
