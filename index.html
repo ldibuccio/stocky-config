@@ -677,9 +677,15 @@ function validate() {
 function save() {
   var config = validate();
   if (!config) return;
+  // Debug: mostrar state antes de guardar
+  debugInfo.watchSample = 'PRE-SAVE: ' + JSON.stringify(state.watchlists).substring(0, 200);
+  renderDebug();
   var payload = JSON.stringify(config);
-  var url = 'pebblejs://close#' + encodeURIComponent(payload);
-  document.location.href = url;
+  // Pausa breve para que el usuario vea el debug antes de cerrar
+  setTimeout(function() {
+    var url = 'pebblejs://close#' + encodeURIComponent(payload);
+    document.location.href = url;
+  }, 2000);
 }
 
 function cancelChanges() {
