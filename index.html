@@ -272,6 +272,17 @@ function renderDebug() {
   var html = '';
   html += '<div>Hash: ' + debugInfo.hashLength + ' chars · Parse: ' + (debugInfo.parsed ? 'OK' : 'NO') + '</div>';
   html += '<div>API: ' + (debugInfo.apiKey ? 'SI' : 'NO') + ' · Ports: ' + debugInfo.portfoliosCount + ' · Watchlists: ' + debugInfo.watchlistsCount + '</div>';
+  // Mostrar el ultimo intento de save
+  try {
+    var lastSave = localStorage.getItem('last_save_attempt');
+    if (lastSave) {
+      var ls = JSON.parse(lastSave);
+      html += '<div style="margin-top:4px;color:#666;font-size:10px;">Last save: ' + ls.ts.substring(11, 19) + ' · ports:' + ls.portfolios + ' · watch:' + ls.watchlists + '</div>';
+      if (ls.watchData) {
+        html += '<div style="background:#fff;padding:3px;font-size:9px;word-break:break-all;">' + ls.watchData + '</div>';
+      }
+    }
+  } catch(e) {}
   if (debugInfo.watchSample) {
     html += '<div style="background:#fff;padding:4px;margin-top:4px;word-break:break-all;font-size:10px;">' + debugInfo.watchSample + '</div>';
   }
@@ -677,15 +688,18 @@ function validate() {
 function save() {
   var config = validate();
   if (!config) return;
-  // Debug: mostrar state antes de guardar
-  debugInfo.watchSample = 'PRE-SAVE: ' + JSON.stringify(state.watchlists).substring(0, 200);
-  renderDebug();
+  // Guardar el ultimo intento de save en localStorage para debug
+  try {
+    localStorage.setItem('last_save_attempt', JSON.stringify({
+      ts: new Date().toISOString(),
+      portfolios: state.portfolios.length,
+      watchlists: state.watchlists.length,
+      watchData: JSON.stringify(state.watchlists).substring(0, 200)
+    }));
+  } catch(e) {}
   var payload = JSON.stringify(config);
-  // Pausa breve para que el usuario vea el debug antes de cerrar
-  setTimeout(function() {
-    var url = 'pebblejs://close#' + encodeURIComponent(payload);
-    document.location.href = url;
-  }, 2000);
+  var url = 'pebblejs://close#' + encodeURIComponent(payload);
+  document.location.href = url;
 }
 
 function cancelChanges() {
