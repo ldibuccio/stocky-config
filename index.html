@@ -208,6 +208,12 @@
 <h1>Stocky Settings</h1>
 <div class="subtitle">Configurá tu API key, portfolios y watchlists</div>
 
+<!-- DEBUG PANEL -->
+<div style="background:#fffbe6;border:2px solid #c97e0b;border-radius:8px;padding:10px;margin-bottom:12px;font-family:monospace;font-size:12px;">
+  <div style="font-weight:700;color:#c97e0b;margin-bottom:4px;">🔍 DEBUG</div>
+  <div id="debugContent">Cargando...</div>
+</div>
+
 <div id="status" class="status"></div>
 
 <!-- API KEY -->
@@ -253,20 +259,45 @@ let state = {
   activeWatchIdx: 0
 };
 
+let debugInfo = {
+  hashLength: 0,
+  parsed: false,
+  apiKey: false,
+  portfoliosCount: 0,
+  watchlistsCount: 0,
+  watchSample: ''
+};
+
+function renderDebug() {
+  var html = '';
+  html += '<div>Hash: ' + debugInfo.hashLength + ' chars · Parse: ' + (debugInfo.parsed ? 'OK' : 'NO') + '</div>';
+  html += '<div>API: ' + (debugInfo.apiKey ? 'SI' : 'NO') + ' · Ports: ' + debugInfo.portfoliosCount + ' · Watchlists: ' + debugInfo.watchlistsCount + '</div>';
+  if (debugInfo.watchSample) {
+    html += '<div style="background:#fff;padding:4px;margin-top:4px;word-break:break-all;font-size:10px;">' + debugInfo.watchSample + '</div>';
+  }
+  document.getElementById('debugContent').innerHTML = html;
+}
+
 function loadFromHash() {
   try {
     var hash = window.location.hash.replace('#', '');
+    debugInfo.hashLength = hash.length;
     if (!hash) return;
     var decoded = decodeURIComponent(hash);
     var parsed = JSON.parse(decoded);
-    if (parsed.apiKey) state.apiKey = parsed.apiKey;
+    debugInfo.parsed = true;
+    if (parsed.apiKey) { state.apiKey = parsed.apiKey; debugInfo.apiKey = true; }
     if (parsed.portfolios && Array.isArray(parsed.portfolios)) {
       state.portfolios = parsed.portfolios;
+      debugInfo.portfoliosCount = parsed.portfolios.length;
     } else if (parsed.portfolio && Array.isArray(parsed.portfolio)) {
       state.portfolios = [{ name: 'Default', tickers: parsed.portfolio }];
+      debugInfo.portfoliosCount = 1;
     }
     if (parsed.watchlists && Array.isArray(parsed.watchlists)) {
       state.watchlists = parsed.watchlists;
+      debugInfo.watchlistsCount = parsed.watchlists.length;
+      debugInfo.watchSample = JSON.stringify(parsed.watchlists).substring(0, 150);
     }
   } catch (e) {}
 }
@@ -303,6 +334,7 @@ function render() {
   renderWatchTabs();
   renderWatchEditor();
   renderWatchCounter();
+  renderDebug();
 }
 
 // === PORTFOLIOS ===
