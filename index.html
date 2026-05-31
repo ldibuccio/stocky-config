@@ -1,287 +1,530 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stocky Settings</title>
 <style>
-* { box-sizing: border-box; }
-body { font-family: -apple-system, sans-serif; background: #f5f5f7; margin: 0; padding: 20px; color: #1f2b40; padding-bottom: 100px; }
-h1 { color: #1f2b40; margin: 0 0 2px 0; font-size: 28px; }
-.subtitle { color: #888; margin: 0 0 24px 0; font-size: 14px; }
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f7fa;
+    --primary: #4ba0db;
+    --primary-dark: #2d6a9f;
+    --text: #1f2d3d;
+    --dim: #6c7a89;
+    --border: #d8dde2;
+    --green: #1f8a3a;
+    --red: #b21f24;
+    --warning: #c97e0b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg2);
+    color: var(--text);
+    line-height: 1.4;
+    padding: 16px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px 0;
+    color: var(--primary-dark);
+  }
+  .subtitle {
+    color: var(--dim);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .section {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--dim);
+    margin-bottom: 4px;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+  button {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--red); color: white; }
+  .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--red);
+    font-size: 18px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+  .btn-small { padding: 6px 10px; font-size: 13px; }
 
-.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: #888; margin: 24px 0 8px 4px; font-weight: bold; }
+  .tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    padding-bottom: 0;
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--dim);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    border-radius: 0;
+  }
+  .tab.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+  }
+  .tab-add {
+    color: var(--primary);
+    font-weight: 700;
+  }
 
-.card { background: white; padding: 16px; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .portfolio-name-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .portfolio-name-row input { flex: 1; }
 
-.label { display: block; font-size: 13px; color: #888; margin-bottom: 4px; margin-top: 8px; }
-.label:first-child { margin-top: 0; }
+  .ticker-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 32px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .ticker-row input { padding: 8px; font-size: 14px; }
+  .ticker-row .symbol-input { text-transform: uppercase; }
 
-input[type="text"], input[type="number"] {
-  width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;
-  font-size: 16px; font-family: inherit; background: white;
-}
-input:focus { outline: none; border-color: #86B6F3; }
+  .ticker-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 32px;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding: 0 4px;
+  }
 
-.holding-card { position: relative; }
-.holding-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.holding-title { font-weight: bold; font-size: 17px; color: #1f2b40; }
-.holding-summary { font-size: 13px; color: #888; margin-top: 2px; }
-.holding-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .add-ticker-btn {
+    background: var(--bg2);
+    border: 1px dashed var(--border);
+    color: var(--primary-dark);
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+  }
 
-.btn-icon {
-  background: none; border: none; cursor: pointer; padding: 4px 8px;
-  font-size: 18px; color: #b83a3a; font-weight: bold;
-}
-.btn-edit, .btn-save, .btn-cancel {
-  flex: 1; padding: 8px; border: 1px solid #ddd; background: white;
-  border-radius: 6px; font-size: 14px; cursor: pointer; font-family: inherit;
-}
-.btn-save { background: #86B6F3; color: #1f2b40; border-color: #86B6F3; font-weight: bold; }
-.btn-edit:hover { background: #f5f5f7; }
+  .counter {
+    text-align: right;
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 8px;
+  }
+  .counter.warning { color: var(--warning); }
+  .counter.error { color: var(--red); }
 
-.btn-add-holding {
-  width: 100%; padding: 14px; background: white; color: #6496E8;
-  border: 2px dashed #86B6F3; border-radius: 12px; font-size: 15px;
-  font-weight: bold; cursor: pointer; margin-top: 8px; font-family: inherit;
-}
-.btn-add-holding:hover { background: #f0f7ff; }
-.btn-add-holding:disabled { opacity: 0.4; cursor: not-allowed; }
+  .status {
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.success { background: #e7f5ec; color: var(--green); border: 1px solid #b8e0c4; }
+  .status.error { background: #fde9ea; color: var(--red); border: 1px solid #f5b7b9; }
 
-.btn-sync {
-  width: 100%; padding: 16px; background: #86B6F3; color: #1f2b40;
-  border: none; border-radius: 12px; font-size: 17px; font-weight: bold;
-  cursor: pointer; margin-top: 24px; font-family: inherit;
-  box-shadow: 0 2px 6px rgba(134,182,243,0.4);
-}
-.btn-sync:hover { background: #6da3e8; }
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    padding: 12px;
+    margin: 20px -16px -16px -16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+  .save-bar button { flex: 1; }
 
-.warning { background: #fff8e1; border-left: 3px solid #f0c040; padding: 10px;
-  border-radius: 6px; font-size: 13px; color: #5d4a00; margin: 8px 0; }
-.warning-red { background: #ffebee; border-left: 3px solid #d32f2f; color: #b71c1c; }
-
-.link { color: #6496E8; text-decoration: none; font-size: 13px; }
-.link:hover { text-decoration: underline; }
-
-.footer { text-align: center; margin-top: 32px; padding-top: 16px;
-  border-top: 1px solid #e0e0e0; font-size: 12px; color: #888; }
-.footer p { margin: 4px 0; }
-
-.edit-form { background: #f9f9fb; padding: 12px; border-radius: 8px; margin-top: 8px; }
-.empty-state { text-align: center; padding: 20px; color: #888; font-size: 14px; }
+  .empty-state {
+    text-align: center;
+    padding: 24px;
+    color: var(--dim);
+  }
 </style>
 </head>
 <body>
 
-<h1>STOCKY</h1>
-<p class="subtitle">Settings</p>
+<h1>Stocky Settings</h1>
+<div class="subtitle">Configurá tu API key y tus portfolios</div>
+
+<div id="status" class="status"></div>
 
 <!-- API KEY -->
-<div class="section-title">API Key</div>
-<div class="card">
-  <label class="label">Finnhub API Key</label>
-  <input type="text" id="apikey" placeholder="Tu API key" autocapitalize="off" autocomplete="off" />
-  <p style="margin: 8px 0 0 0;"><a class="link" href="https://finnhub.io/register" target="_blank">Get free key here →</a></p>
-  <div class="warning warning-red" id="apikey-warning" style="display:none;">Sin API key Stocky no puede obtener precios.</div>
+<div class="section">
+  <div class="section-title">Finnhub API Key</div>
+  <label for="apiKey">Tu API key (gratis en finnhub.io)</label>
+  <input type="password" id="apiKey" placeholder="cxxxxxxxxxxxxxxxxxx" autocomplete="off">
 </div>
 
-<!-- PORTFOLIO -->
-<div class="section-title">Portfolio</div>
-<div id="holdings-list"></div>
-<button class="btn-add-holding" id="btn-add" onclick="addNewHolding()">+ Add Holding</button>
+<!-- PORTFOLIOS -->
+<div class="section">
+  <div class="section-title">Portfolios</div>
 
-<!-- SYNC -->
-<button class="btn-sync" onclick="save()">SYNC TO WATCH</button>
+  <div id="tabsContainer" class="tabs" style="display:none;"></div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <p><strong>Stocky v1.0.0</strong></p>
-  <p>by Ldibuccio</p>
+  <div id="portfolioEditor"></div>
+
+  <div class="counter" id="globalCounter">0 / 20 tickers totales</div>
+</div>
+
+<!-- SAVE -->
+<div class="save-bar">
+  <button class="btn-secondary" onclick="cancelChanges()">Cancelar</button>
+  <button class="btn-primary" onclick="save()">Guardar</button>
 </div>
 
 <script>
-var MAX_HOLDINGS = 50;
+const MAX_PORTFOLIOS = 5;
+const MAX_TICKERS_TOTAL = 20;
 
-var state = {
+let state = {
   apiKey: '',
-  portfolio: [],
-  editingIndex: -1,
-  addingNew: false
+  portfolios: [],
+  activeIdx: 0
 };
 
-// Cargar config previa de URL
-try {
-  var url = new URL(document.location.href);
-  var configParam = url.searchParams.get('config');
-  if (configParam) {
-    var parsed = JSON.parse(decodeURIComponent(configParam));
+function loadFromHash() {
+  // Si vino del Pebble app via URL hash con config previa
+  try {
+    var hash = window.location.hash.replace('#', '');
+    if (!hash) return;
+    var decoded = decodeURIComponent(hash);
+    var parsed = JSON.parse(decoded);
     if (parsed.apiKey) state.apiKey = parsed.apiKey;
-    if (parsed.portfolio && parsed.portfolio.length > 0) state.portfolio = parsed.portfolio;
+    if (parsed.portfolios && Array.isArray(parsed.portfolios)) {
+      state.portfolios = parsed.portfolios;
+    } else if (parsed.portfolio && Array.isArray(parsed.portfolio)) {
+      // Migración: formato viejo, single portfolio
+      state.portfolios = [{ name: 'Default', tickers: parsed.portfolio }];
+    }
+  } catch (e) {}
+}
+
+function ensureAtLeastOnePortfolio() {
+  if (state.portfolios.length === 0) {
+    state.portfolios.push({ name: 'Default', tickers: [] });
   }
-} catch (e) {
-  console.log('Sin config previa');
 }
 
-// Si no hay portfolio cargado, defaults
-if (state.portfolio.length === 0) {
-  state.portfolio = [
-    { symbol: 'AAPL', shares: 10, avgCost: 180.00 },
-    { symbol: 'MSFT', shares: 5,  avgCost: 400.00 },
-    { symbol: 'GOOGL', shares: 8, avgCost: 140.00 }
-  ];
-}
-
-document.getElementById('apikey').value = state.apiKey;
-
-function escapeHTML(str) {
-  return String(str).replace(/[&<>"']/g, function(c) {
-    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-  });
+function countTotalTickers() {
+  var total = 0;
+  state.portfolios.forEach(function(p) { total += p.tickers.length; });
+  return total;
 }
 
 function render() {
-  var list = document.getElementById('holdings-list');
-  var html = '';
+  ensureAtLeastOnePortfolio();
+  if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
+  if (state.activeIdx < 0) state.activeIdx = 0;
   
-  if (state.portfolio.length === 0 && !state.addingNew) {
-    html = '<div class="card empty-state">No holdings yet. Tap "+ Add Holding" to start.</div>';
-  } else {
-    for (var i = 0; i < state.portfolio.length; i++) {
-      var h = state.portfolio[i];
-      var isEditing = (state.editingIndex === i);
-      
-      if (isEditing) {
-        html += renderEditForm(i, h);
-      } else {
-        html += renderHoldingCard(i, h);
-      }
+  document.getElementById('apiKey').value = state.apiKey;
+  renderTabs();
+  renderEditor();
+  renderCounter();
+}
+
+function renderTabs() {
+  var container = document.getElementById('tabsContainer');
+  // Tabs solo si hay 2+ portfolios
+  if (state.portfolios.length < 2 && state.portfolios.length < MAX_PORTFOLIOS) {
+    // Mostramos al menos un botón "+ Nuevo" si hay 1 portfolio
+    if (state.portfolios.length === 1) {
+      container.style.display = 'flex';
+      container.innerHTML = '';
+      var t = document.createElement('button');
+      t.className = 'tab active';
+      t.textContent = state.portfolios[0].name || 'Default';
+      container.appendChild(t);
+      var addBtn = document.createElement('button');
+      addBtn.className = 'tab tab-add';
+      addBtn.textContent = '+ Nuevo';
+      addBtn.onclick = addPortfolio;
+      container.appendChild(addBtn);
+      return;
     }
-    
-    if (state.addingNew) {
-      html += renderEditForm(-1, { symbol: '', shares: '', avgCost: '' });
-    }
-  }
-  
-  list.innerHTML = html;
-  
-  // Botón + Add deshabilitado si estás editando o llegaste al límite
-  var btnAdd = document.getElementById('btn-add');
-  btnAdd.disabled = (state.editingIndex >= 0) || state.addingNew || (state.portfolio.length >= MAX_HOLDINGS);
-  
-  // Focus en el primer input si estás editando o agregando
-  if (state.editingIndex >= 0 || state.addingNew) {
-    setTimeout(function() {
-      var firstInput = document.querySelector('.edit-form input');
-      if (firstInput) firstInput.focus();
-    }, 50);
-  }
-}
-
-function renderHoldingCard(idx, h) {
-  return '<div class="card holding-card">' +
-    '<div class="holding-header">' +
-      '<div class="holding-title">' + escapeHTML(h.symbol) + '</div>' +
-      '<button class="btn-icon" onclick="deleteHolding(' + idx + ')" title="Eliminar">×</button>' +
-    '</div>' +
-    '<div class="holding-summary">' + h.shares + ' shares @ $' + Number(h.avgCost).toFixed(2) + '</div>' +
-    '<div class="holding-actions">' +
-      '<button class="btn-edit" onclick="editHolding(' + idx + ')">Edit</button>' +
-    '</div>' +
-  '</div>';
-}
-
-function renderEditForm(idx, h) {
-  var isNew = (idx === -1);
-  var title = isNew ? 'New Holding' : 'Editing ' + escapeHTML(h.symbol);
-  
-  return '<div class="card holding-card">' +
-    '<div class="holding-title">' + title + '</div>' +
-    '<div class="edit-form">' +
-      '<label class="label">Symbol (e.g. AAPL)</label>' +
-      '<input type="text" id="edit-symbol" value="' + escapeHTML(h.symbol) + '" maxlength="10" autocapitalize="characters" />' +
-      '<label class="label">Shares</label>' +
-      '<input type="number" id="edit-shares" value="' + h.shares + '" min="0" step="any" />' +
-      '<label class="label">Avg Cost (USD)</label>' +
-      '<input type="number" id="edit-cost" value="' + h.avgCost + '" min="0" step="any" />' +
-      '<div class="holding-actions">' +
-        '<button class="btn-cancel" onclick="cancelEdit()">Cancel</button>' +
-        '<button class="btn-save" onclick="saveEdit(' + idx + ')">Save</button>' +
-      '</div>' +
-    '</div>' +
-  '</div>';
-}
-
-function editHolding(idx) {
-  if (state.editingIndex >= 0 || state.addingNew) return;
-  state.editingIndex = idx;
-  render();
-}
-
-function addNewHolding() {
-  if (state.editingIndex >= 0 || state.addingNew) return;
-  if (state.portfolio.length >= MAX_HOLDINGS) {
-    alert('Maximum ' + MAX_HOLDINGS + ' holdings reached');
+    container.style.display = 'none';
+    container.innerHTML = '';
     return;
   }
-  state.addingNew = true;
-  render();
-}
-
-function cancelEdit() {
-  state.editingIndex = -1;
-  state.addingNew = false;
-  render();
-}
-
-function saveEdit(idx) {
-  var sym = document.getElementById('edit-symbol').value.toUpperCase().trim();
-  var sh = parseFloat(document.getElementById('edit-shares').value);
-  var co = parseFloat(document.getElementById('edit-cost').value);
-  
-  if (!sym) { alert('Symbol is required'); return; }
-  if (isNaN(sh) || sh <= 0) { alert('Shares must be greater than 0'); return; }
-  if (isNaN(co) || co < 0) { alert('Avg cost must be 0 or more'); return; }
-  
-  var newHolding = { symbol: sym, shares: sh, avgCost: co };
-  
-  if (idx === -1) {
-    state.portfolio.push(newHolding);
-    state.addingNew = false;
-  } else {
-    state.portfolio[idx] = newHolding;
-    state.editingIndex = -1;
+  container.style.display = 'flex';
+  container.innerHTML = '';
+  state.portfolios.forEach(function(p, idx) {
+    var t = document.createElement('button');
+    t.className = 'tab' + (idx === state.activeIdx ? ' active' : '');
+    t.textContent = p.name || 'Sin nombre';
+    t.onclick = function() { state.activeIdx = idx; render(); };
+    container.appendChild(t);
+  });
+  if (state.portfolios.length < MAX_PORTFOLIOS) {
+    var addBtn = document.createElement('button');
+    addBtn.className = 'tab tab-add';
+    addBtn.textContent = '+ Nuevo';
+    addBtn.onclick = addPortfolio;
+    container.appendChild(addBtn);
   }
+}
+
+function renderEditor() {
+  var editor = document.getElementById('portfolioEditor');
+  var p = state.portfolios[state.activeIdx];
+  if (!p) { editor.innerHTML = ''; return; }
+  
+  editor.innerHTML = '';
+  
+  // Nombre del portfolio + borrar
+  var nameRow = document.createElement('div');
+  nameRow.className = 'portfolio-name-row';
+  
+  var nameInput = document.createElement('input');
+  nameInput.type = 'text';
+  nameInput.value = p.name;
+  nameInput.placeholder = 'Nombre del portfolio';
+  nameInput.maxLength = 20;
+  nameInput.oninput = function() { p.name = this.value; };
+  nameRow.appendChild(nameInput);
+  
+  if (state.portfolios.length > 1) {
+    var deleteBtn = document.createElement('button');
+    deleteBtn.className = 'btn-danger btn-small';
+    deleteBtn.textContent = 'Borrar';
+    deleteBtn.onclick = function() { deletePortfolio(state.activeIdx); };
+    nameRow.appendChild(deleteBtn);
+  }
+  
+  editor.appendChild(nameRow);
+  
+  // Header de la grilla
+  var header = document.createElement('div');
+  header.className = 'ticker-header';
+  header.innerHTML = '<div>Ticker</div><div>Shares</div><div>Avg Cost</div><div></div>';
+  editor.appendChild(header);
+  
+  // Tickers
+  p.tickers.forEach(function(t, idx) {
+    var row = document.createElement('div');
+    row.className = 'ticker-row';
+    
+    var symbolInput = document.createElement('input');
+    symbolInput.type = 'text';
+    symbolInput.className = 'symbol-input';
+    symbolInput.value = t.symbol;
+    symbolInput.placeholder = 'AAPL';
+    symbolInput.maxLength = 8;
+    symbolInput.oninput = function() { t.symbol = this.value.toUpperCase(); };
+    row.appendChild(symbolInput);
+    
+    var sharesInput = document.createElement('input');
+    sharesInput.type = 'number';
+    sharesInput.value = t.shares;
+    sharesInput.placeholder = '10';
+    sharesInput.step = '0.01';
+    sharesInput.min = '0';
+    sharesInput.oninput = function() { t.shares = parseFloat(this.value) || 0; };
+    row.appendChild(sharesInput);
+    
+    var costInput = document.createElement('input');
+    costInput.type = 'number';
+    costInput.value = t.avgCost;
+    costInput.placeholder = '180.00';
+    costInput.step = '0.01';
+    costInput.min = '0';
+    costInput.oninput = function() { t.avgCost = parseFloat(this.value) || 0; };
+    row.appendChild(costInput);
+    
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-icon';
+    removeBtn.innerHTML = '×';
+    removeBtn.title = 'Eliminar';
+    removeBtn.onclick = function() { removeTicker(idx); };
+    row.appendChild(removeBtn);
+    
+    editor.appendChild(row);
+  });
+  
+  // Botón agregar ticker
+  var addBtn = document.createElement('button');
+  addBtn.className = 'add-ticker-btn';
+  addBtn.textContent = '+ Agregar ticker';
+  addBtn.onclick = addTicker;
+  editor.appendChild(addBtn);
+}
+
+function renderCounter() {
+  var total = countTotalTickers();
+  var counter = document.getElementById('globalCounter');
+  counter.textContent = total + ' / ' + MAX_TICKERS_TOTAL + ' tickers totales';
+  counter.className = 'counter';
+  if (total >= MAX_TICKERS_TOTAL) counter.className = 'counter error';
+  else if (total >= MAX_TICKERS_TOTAL - 3) counter.className = 'counter warning';
+}
+
+function addPortfolio() {
+  if (state.portfolios.length >= MAX_PORTFOLIOS) {
+    showStatus('error', 'Máximo ' + MAX_PORTFOLIOS + ' portfolios');
+    return;
+  }
+  state.portfolios.push({ name: 'Portfolio ' + (state.portfolios.length + 1), tickers: [] });
+  state.activeIdx = state.portfolios.length - 1;
   render();
 }
 
-function deleteHolding(idx) {
-  if (state.editingIndex >= 0 || state.addingNew) return;
-  var h = state.portfolio[idx];
-  if (confirm('Delete ' + h.symbol + '?')) {
-    state.portfolio.splice(idx, 1);
-    render();
+function deletePortfolio(idx) {
+  if (state.portfolios.length <= 1) {
+    showStatus('error', 'Necesitás al menos un portfolio');
+    return;
   }
+  if (!confirm('¿Borrar este portfolio? Se pierden todos sus tickers.')) return;
+  state.portfolios.splice(idx, 1);
+  if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
+  render();
+}
+
+function addTicker() {
+  if (countTotalTickers() >= MAX_TICKERS_TOTAL) {
+    showStatus('error', 'Máximo ' + MAX_TICKERS_TOTAL + ' tickers totales. Eliminá uno antes de agregar.');
+    return;
+  }
+  state.portfolios[state.activeIdx].tickers.push({ symbol: '', shares: 0, avgCost: 0 });
+  render();
+}
+
+function removeTicker(idx) {
+  state.portfolios[state.activeIdx].tickers.splice(idx, 1);
+  render();
+}
+
+function showStatus(type, msg) {
+  var status = document.getElementById('status');
+  status.className = 'status show ' + type;
+  status.textContent = msg;
+  setTimeout(function() {
+    status.classList.remove('show');
+  }, 4000);
+}
+
+function validate() {
+  var apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) {
+    showStatus('error', 'Falta la API key de Finnhub');
+    return null;
+  }
+  // Validar portfolios
+  for (var i = 0; i < state.portfolios.length; i++) {
+    var p = state.portfolios[i];
+    if (!p.name || !p.name.trim()) {
+      showStatus('error', 'El portfolio ' + (i + 1) + ' no tiene nombre');
+      state.activeIdx = i;
+      render();
+      return null;
+    }
+    for (var j = 0; j < p.tickers.length; j++) {
+      var t = p.tickers[j];
+      if (!t.symbol || !t.symbol.trim()) {
+        showStatus('error', 'Hay un ticker sin símbolo en "' + p.name + '"');
+        state.activeIdx = i;
+        render();
+        return null;
+      }
+      if (!t.shares || t.shares <= 0) {
+        showStatus('error', t.symbol + ' tiene shares inválidos');
+        state.activeIdx = i;
+        render();
+        return null;
+      }
+      if (!t.avgCost || t.avgCost <= 0) {
+        showStatus('error', t.symbol + ' tiene avg cost inválido');
+        state.activeIdx = i;
+        render();
+        return null;
+      }
+    }
+  }
+  return { apiKey: apiKey, portfolios: state.portfolios };
 }
 
 function save() {
-  // Si está editando algo, avisar
-  if (state.editingIndex >= 0 || state.addingNew) {
-    if (!confirm('You have unsaved holding changes. Continue anyway?')) return;
-  }
-  
-  var apiKey = document.getElementById('apikey').value.trim();
-  
-  if (!apiKey) {
-    document.getElementById('apikey-warning').style.display = 'block';
-    if (!confirm('No API key set. Stocky will show "Error". Continue?')) return;
-  }
-  
-  var config = { apiKey: apiKey, portfolio: state.portfolio };
-  var data = encodeURIComponent(JSON.stringify(config));
-  document.location = "pebblejs://close#" + data;
+  var config = validate();
+  if (!config) return;
+  var payload = JSON.stringify(config);
+  // Devolver al Pebble via URL
+  var url = 'pebblejs://close#' + encodeURIComponent(payload);
+  document.location.href = url;
 }
 
+function cancelChanges() {
+  document.location.href = 'pebblejs://close#';
+}
+
+// Init
+loadFromHash();
 render();
+
+document.getElementById('apiKey').addEventListener('input', function() {
+  state.apiKey = this.value;
+});
 </script>
 
 </body>
