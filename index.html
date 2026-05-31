@@ -29,8 +29,16 @@
     margin-left: auto;
     margin-right: auto;
   }
-  h1 { font-size: 22px; margin: 0 0 4px 0; color: var(--primary-dark); }
-  .subtitle { color: var(--dim); font-size: 13px; margin-bottom: 20px; }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 4px 0;
+    color: var(--primary-dark);
+  }
+  .subtitle {
+    color: var(--dim);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
   .section {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -38,44 +46,161 @@
     padding: 16px;
     margin-bottom: 16px;
   }
-  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
-  label { display: block; font-size: 13px; color: var(--dim); margin-bottom: 4px; }
-  input[type="text"], input[type="number"], input[type="password"] {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--border); border-radius: 6px;
-    font-size: 15px; background: var(--bg); color: var(--text);
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--dim);
+    margin-bottom: 4px;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="password"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 15px;
+    background: var(--bg);
+    color: var(--text);
   }
   input:focus { outline: none; border-color: var(--primary); }
-  button { border: none; padding: 10px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+  button {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
   button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
   .btn-primary { background: var(--primary); color: white; }
   .btn-secondary { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
   .btn-danger { background: var(--red); color: white; }
-  .btn-icon { background: transparent; border: none; color: var(--red); font-size: 18px; padding: 4px 8px; cursor: pointer; }
+  .btn-icon {
+    background: transparent;
+    border: none;
+    color: var(--red);
+    font-size: 18px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
   .btn-small { padding: 6px 10px; font-size: 13px; }
-  .tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--border); margin-bottom: 12px; padding-bottom: 0; }
-  .tab { background: transparent; border: none; padding: 8px 14px; font-size: 14px; font-weight: 500; cursor: pointer; color: var(--dim); border-bottom: 2px solid transparent; white-space: nowrap; border-radius: 0; }
-  .tab.active { color: var(--primary-dark); border-bottom-color: var(--primary); }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 12px;
+    padding-bottom: 0;
+  }
+  .tab {
+    background: transparent;
+    border: none;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--dim);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    border-radius: 0;
+  }
+  .tab.active {
+    color: var(--primary-dark);
+    border-bottom-color: var(--primary);
+  }
   .tab-add { color: var(--primary); font-weight: 700; }
-  .name-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; }
-  .name-row input { flex: 1; }
-  .ticker-row { display: grid; grid-template-columns: 1fr 80px 100px 32px; gap: 8px; align-items: center; margin-bottom: 8px; }
-  .ticker-row.watchlist { grid-template-columns: 1fr 32px; }
+
+  .portfolio-name-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+  .portfolio-name-row input { flex: 1; }
+
+  .ticker-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 32px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
   .ticker-row input { padding: 8px; font-size: 14px; }
   .ticker-row .symbol-input { text-transform: uppercase; }
-  .ticker-header { display: grid; grid-template-columns: 1fr 80px 100px 32px; gap: 8px; font-size: 11px; color: var(--dim); text-transform: uppercase; font-weight: 600; margin-bottom: 6px; padding: 0 4px; }
-  .ticker-header.watchlist { grid-template-columns: 1fr 32px; }
-  .add-ticker-btn { background: var(--bg2); border: 1px dashed var(--border); color: var(--primary-dark); width: 100%; margin-top: 8px; padding: 10px; }
-  .counter { text-align: right; font-size: 12px; color: var(--dim); margin-top: 8px; }
+
+  .watch-row {
+    display: grid;
+    grid-template-columns: 1fr 32px;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .watch-row input { padding: 8px; font-size: 14px; }
+  .watch-row .symbol-input { text-transform: uppercase; }
+
+  .ticker-header {
+    display: grid;
+    grid-template-columns: 1fr 80px 100px 32px;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--dim);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+    padding: 0 4px;
+  }
+
+  .add-ticker-btn {
+    background: var(--bg2);
+    border: 1px dashed var(--border);
+    color: var(--primary-dark);
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+  }
+
+  .counter {
+    text-align: right;
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 8px;
+  }
   .counter.warning { color: var(--warning); }
   .counter.error { color: var(--red); }
-  .status { padding: 10px 12px; border-radius: 6px; margin-bottom: 12px; font-size: 14px; display: none; }
+
+  .status {
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    display: none;
+  }
   .status.show { display: block; }
   .status.success { background: #e7f5ec; color: var(--green); border: 1px solid #b8e0c4; }
   .status.error { background: #fde9ea; color: var(--red); border: 1px solid #f5b7b9; }
-  .save-bar { position: sticky; bottom: 0; background: var(--bg); padding: 12px; margin: 20px -16px -16px -16px; border-top: 1px solid var(--border); display: flex; gap: 10px; z-index: 10; }
+
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg);
+    padding: 12px;
+    margin: 20px -16px -16px -16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
   .save-bar button { flex: 1; }
-  .empty-state { text-align: center; padding: 20px; color: var(--dim); font-size: 13px; }
 </style>
 </head>
 <body>
@@ -85,26 +210,30 @@
 
 <div id="status" class="status"></div>
 
+<!-- API KEY -->
 <div class="section">
   <div class="section-title">Finnhub API Key</div>
   <label for="apiKey">Tu API key (gratis en finnhub.io)</label>
   <input type="password" id="apiKey" placeholder="cxxxxxxxxxxxxxxxxxx" autocomplete="off">
 </div>
 
+<!-- PORTFOLIOS -->
 <div class="section">
   <div class="section-title">Portfolios</div>
-  <div id="portfoliosTabsContainer" class="tabs" style="display:none;"></div>
+  <div id="tabsContainer" class="tabs" style="display:none;"></div>
   <div id="portfolioEditor"></div>
-  <div class="counter" id="portfolioCounter">0 / 20 tickers en portfolios</div>
+  <div class="counter" id="globalCounter">0 / 20 tickers de portfolio</div>
 </div>
 
+<!-- WATCHLISTS -->
 <div class="section">
   <div class="section-title">Watchlists</div>
-  <div id="watchlistsTabsContainer" class="tabs"></div>
-  <div id="watchlistEditor"></div>
-  <div class="counter" id="watchlistCounter">0 / 10 tickers en watchlists</div>
+  <div id="watchTabsContainer" class="tabs" style="display:none;"></div>
+  <div id="watchEditor"></div>
+  <div class="counter" id="watchCounter">0 / 10 tickers de watchlist</div>
 </div>
 
+<!-- SAVE -->
 <div class="save-bar">
   <button class="btn-secondary" onclick="cancelChanges()">Cancelar</button>
   <button class="btn-primary" onclick="save()">Guardar</button>
@@ -112,11 +241,17 @@
 
 <script>
 const MAX_PORTFOLIOS = 5;
-const MAX_TICKERS_PORTFOLIO_TOTAL = 20;
+const MAX_TICKERS_TOTAL = 20;
 const MAX_WATCHLISTS = 3;
-const MAX_TICKERS_WATCHLIST_TOTAL = 10;
+const MAX_WATCH_TICKERS_TOTAL = 10;
 
-let state = { apiKey: '', portfolios: [], watchlists: [], pActiveIdx: 0, wActiveIdx: 0 };
+let state = {
+  apiKey: '',
+  portfolios: [],
+  watchlists: [],
+  activeIdx: 0,
+  activeWatchIdx: 0
+};
 
 function loadFromHash() {
   try {
@@ -137,58 +272,69 @@ function loadFromHash() {
 }
 
 function ensureAtLeastOnePortfolio() {
-  if (state.portfolios.length === 0) state.portfolios.push({ name: 'Default', tickers: [] });
+  if (state.portfolios.length === 0) {
+    state.portfolios.push({ name: 'Default', tickers: [] });
+  }
 }
 
-function countPortfolioTickers() {
+function countTotalTickers() {
   var total = 0;
-  state.portfolios.forEach(function(p) { total += (p.tickers || []).length; });
+  state.portfolios.forEach(function(p) { total += p.tickers.length; });
   return total;
 }
 
-function countWatchlistTickers() {
+function countTotalWatchTickers() {
   var total = 0;
-  state.watchlists.forEach(function(w) { total += (w.tickers || []).length; });
+  state.watchlists.forEach(function(w) { total += w.tickers.length; });
   return total;
 }
 
 function render() {
   ensureAtLeastOnePortfolio();
-  if (state.pActiveIdx >= state.portfolios.length) state.pActiveIdx = state.portfolios.length - 1;
-  if (state.pActiveIdx < 0) state.pActiveIdx = 0;
-  if (state.wActiveIdx >= state.watchlists.length) state.wActiveIdx = Math.max(0, state.watchlists.length - 1);
+  if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
+  if (state.activeIdx < 0) state.activeIdx = 0;
+  if (state.activeWatchIdx >= state.watchlists.length) state.activeWatchIdx = state.watchlists.length - 1;
+  if (state.activeWatchIdx < 0) state.activeWatchIdx = 0;
+  
   document.getElementById('apiKey').value = state.apiKey;
-  renderPortfolioTabs();
-  renderPortfolioEditor();
-  renderPortfolioCounter();
-  renderWatchlistTabs();
-  renderWatchlistEditor();
-  renderWatchlistCounter();
+  renderTabs();
+  renderEditor();
+  renderCounter();
+  renderWatchTabs();
+  renderWatchEditor();
+  renderWatchCounter();
 }
 
-function renderPortfolioTabs() {
-  var container = document.getElementById('portfoliosTabsContainer');
-  if (state.portfolios.length === 1) {
-    container.style.display = 'flex';
+// === PORTFOLIOS ===
+
+function renderTabs() {
+  var container = document.getElementById('tabsContainer');
+  if (state.portfolios.length < 2 && state.portfolios.length < MAX_PORTFOLIOS) {
+    if (state.portfolios.length === 1) {
+      container.style.display = 'flex';
+      container.innerHTML = '';
+      var t = document.createElement('button');
+      t.className = 'tab active';
+      t.textContent = state.portfolios[0].name || 'Default';
+      container.appendChild(t);
+      var addBtn = document.createElement('button');
+      addBtn.className = 'tab tab-add';
+      addBtn.textContent = '+ Nuevo';
+      addBtn.onclick = addPortfolio;
+      container.appendChild(addBtn);
+      return;
+    }
+    container.style.display = 'none';
     container.innerHTML = '';
-    var t = document.createElement('button');
-    t.className = 'tab active';
-    t.textContent = state.portfolios[0].name || 'Default';
-    container.appendChild(t);
-    var addBtn = document.createElement('button');
-    addBtn.className = 'tab tab-add';
-    addBtn.textContent = '+ Nuevo';
-    addBtn.onclick = addPortfolio;
-    container.appendChild(addBtn);
     return;
   }
   container.style.display = 'flex';
   container.innerHTML = '';
   state.portfolios.forEach(function(p, idx) {
     var t = document.createElement('button');
-    t.className = 'tab' + (idx === state.pActiveIdx ? ' active' : '');
+    t.className = 'tab' + (idx === state.activeIdx ? ' active' : '');
     t.textContent = p.name || 'Sin nombre';
-    t.onclick = function() { state.pActiveIdx = idx; render(); };
+    t.onclick = function() { state.activeIdx = idx; render(); };
     container.appendChild(t);
   });
   if (state.portfolios.length < MAX_PORTFOLIOS) {
@@ -200,13 +346,14 @@ function renderPortfolioTabs() {
   }
 }
 
-function renderPortfolioEditor() {
+function renderEditor() {
   var editor = document.getElementById('portfolioEditor');
-  var p = state.portfolios[state.pActiveIdx];
+  var p = state.portfolios[state.activeIdx];
   if (!p) { editor.innerHTML = ''; return; }
   editor.innerHTML = '';
+  
   var nameRow = document.createElement('div');
-  nameRow.className = 'name-row';
+  nameRow.className = 'portfolio-name-row';
   var nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.value = p.name;
@@ -214,18 +361,21 @@ function renderPortfolioEditor() {
   nameInput.maxLength = 20;
   nameInput.oninput = function() { p.name = this.value; };
   nameRow.appendChild(nameInput);
+  
   if (state.portfolios.length > 1) {
     var deleteBtn = document.createElement('button');
     deleteBtn.className = 'btn-danger btn-small';
     deleteBtn.textContent = 'Borrar';
-    deleteBtn.onclick = function() { deletePortfolio(state.pActiveIdx); };
+    deleteBtn.onclick = function() { deletePortfolio(state.activeIdx); };
     nameRow.appendChild(deleteBtn);
   }
   editor.appendChild(nameRow);
+  
   var header = document.createElement('div');
   header.className = 'ticker-header';
   header.innerHTML = '<div>Ticker</div><div>Shares</div><div>Avg Cost</div><div></div>';
   editor.appendChild(header);
+  
   p.tickers.forEach(function(t, idx) {
     var row = document.createElement('div');
     row.className = 'ticker-row';
@@ -256,24 +406,25 @@ function renderPortfolioEditor() {
     var removeBtn = document.createElement('button');
     removeBtn.className = 'btn-icon';
     removeBtn.innerHTML = '×';
-    removeBtn.onclick = function() { removePortfolioTicker(idx); };
+    removeBtn.onclick = function() { removeTicker(idx); };
     row.appendChild(removeBtn);
     editor.appendChild(row);
   });
+  
   var addBtn = document.createElement('button');
   addBtn.className = 'add-ticker-btn';
   addBtn.textContent = '+ Agregar ticker';
-  addBtn.onclick = addPortfolioTicker;
+  addBtn.onclick = addTicker;
   editor.appendChild(addBtn);
 }
 
-function renderPortfolioCounter() {
-  var total = countPortfolioTickers();
-  var counter = document.getElementById('portfolioCounter');
-  counter.textContent = total + ' / ' + MAX_TICKERS_PORTFOLIO_TOTAL + ' tickers en portfolios';
+function renderCounter() {
+  var total = countTotalTickers();
+  var counter = document.getElementById('globalCounter');
+  counter.textContent = total + ' / ' + MAX_TICKERS_TOTAL + ' tickers de portfolio';
   counter.className = 'counter';
-  if (total >= MAX_TICKERS_PORTFOLIO_TOTAL) counter.className = 'counter error';
-  else if (total >= MAX_TICKERS_PORTFOLIO_TOTAL - 3) counter.className = 'counter warning';
+  if (total >= MAX_TICKERS_TOTAL) counter.className = 'counter error';
+  else if (total >= MAX_TICKERS_TOTAL - 3) counter.className = 'counter warning';
 }
 
 function addPortfolio() {
@@ -282,7 +433,7 @@ function addPortfolio() {
     return;
   }
   state.portfolios.push({ name: 'Portfolio ' + (state.portfolios.length + 1), tickers: [] });
-  state.pActiveIdx = state.portfolios.length - 1;
+  state.activeIdx = state.portfolios.length - 1;
   render();
 }
 
@@ -293,31 +444,34 @@ function deletePortfolio(idx) {
   }
   if (!confirm('¿Borrar este portfolio? Se pierden todos sus tickers.')) return;
   state.portfolios.splice(idx, 1);
+  if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
   render();
 }
 
-function addPortfolioTicker() {
-  if (countPortfolioTickers() >= MAX_TICKERS_PORTFOLIO_TOTAL) {
-    showStatus('error', 'Máximo ' + MAX_TICKERS_PORTFOLIO_TOTAL + ' tickers en portfolios.');
+function addTicker() {
+  if (countTotalTickers() >= MAX_TICKERS_TOTAL) {
+    showStatus('error', 'Máximo ' + MAX_TICKERS_TOTAL + ' tickers de portfolio.');
     return;
   }
-  state.portfolios[state.pActiveIdx].tickers.push({ symbol: '', shares: 0, avgCost: 0 });
+  state.portfolios[state.activeIdx].tickers.push({ symbol: '', shares: 0, avgCost: 0 });
   render();
 }
 
-function removePortfolioTicker(idx) {
-  state.portfolios[state.pActiveIdx].tickers.splice(idx, 1);
+function removeTicker(idx) {
+  state.portfolios[state.activeIdx].tickers.splice(idx, 1);
   render();
 }
 
-function renderWatchlistTabs() {
-  var container = document.getElementById('watchlistsTabsContainer');
+// === WATCHLISTS ===
+
+function renderWatchTabs() {
+  var container = document.getElementById('watchTabsContainer');
   if (state.watchlists.length === 0) {
     container.style.display = 'flex';
     container.innerHTML = '';
     var addBtn = document.createElement('button');
     addBtn.className = 'tab tab-add';
-    addBtn.textContent = '+ Crear watchlist';
+    addBtn.textContent = '+ Nueva watchlist';
     addBtn.onclick = addWatchlist;
     container.appendChild(addBtn);
     return;
@@ -326,9 +480,9 @@ function renderWatchlistTabs() {
   container.innerHTML = '';
   state.watchlists.forEach(function(w, idx) {
     var t = document.createElement('button');
-    t.className = 'tab' + (idx === state.wActiveIdx ? ' active' : '');
+    t.className = 'tab' + (idx === state.activeWatchIdx ? ' active' : '');
     t.textContent = w.name || 'Sin nombre';
-    t.onclick = function() { state.wActiveIdx = idx; render(); };
+    t.onclick = function() { state.activeWatchIdx = idx; render(); };
     container.appendChild(t);
   });
   if (state.watchlists.length < MAX_WATCHLISTS) {
@@ -340,17 +494,18 @@ function renderWatchlistTabs() {
   }
 }
 
-function renderWatchlistEditor() {
-  var editor = document.getElementById('watchlistEditor');
+function renderWatchEditor() {
+  var editor = document.getElementById('watchEditor');
   if (state.watchlists.length === 0) {
-    editor.innerHTML = '<div class="empty-state">No tenés watchlists. Tocá <b>+ Crear watchlist</b> arriba para empezar.</div>';
+    editor.innerHTML = '<div style="color:var(--dim);font-size:13px;padding:8px 0;">No tenés watchlists. Apretá "+ Nueva watchlist" para empezar.</div>';
     return;
   }
-  var w = state.watchlists[state.wActiveIdx];
+  var w = state.watchlists[state.activeWatchIdx];
   if (!w) { editor.innerHTML = ''; return; }
   editor.innerHTML = '';
+  
   var nameRow = document.createElement('div');
-  nameRow.className = 'name-row';
+  nameRow.className = 'portfolio-name-row';
   var nameInput = document.createElement('input');
   nameInput.type = 'text';
   nameInput.value = w.name;
@@ -358,48 +513,48 @@ function renderWatchlistEditor() {
   nameInput.maxLength = 20;
   nameInput.oninput = function() { w.name = this.value; };
   nameRow.appendChild(nameInput);
+  
   var deleteBtn = document.createElement('button');
   deleteBtn.className = 'btn-danger btn-small';
   deleteBtn.textContent = 'Borrar';
-  deleteBtn.onclick = function() { deleteWatchlist(state.wActiveIdx); };
+  deleteBtn.onclick = function() { deleteWatchlist(state.activeWatchIdx); };
   nameRow.appendChild(deleteBtn);
+  
   editor.appendChild(nameRow);
-  var header = document.createElement('div');
-  header.className = 'ticker-header watchlist';
-  header.innerHTML = '<div>Ticker</div><div></div>';
-  editor.appendChild(header);
+  
   w.tickers.forEach(function(t, idx) {
     var row = document.createElement('div');
-    row.className = 'ticker-row watchlist';
+    row.className = 'watch-row';
     var symbolInput = document.createElement('input');
     symbolInput.type = 'text';
     symbolInput.className = 'symbol-input';
     symbolInput.value = t.symbol;
-    symbolInput.placeholder = 'AAPL';
+    symbolInput.placeholder = 'NVDA';
     symbolInput.maxLength = 8;
     symbolInput.oninput = function() { t.symbol = this.value.toUpperCase(); };
     row.appendChild(symbolInput);
     var removeBtn = document.createElement('button');
     removeBtn.className = 'btn-icon';
     removeBtn.innerHTML = '×';
-    removeBtn.onclick = function() { removeWatchlistTicker(idx); };
+    removeBtn.onclick = function() { removeWatchTicker(idx); };
     row.appendChild(removeBtn);
     editor.appendChild(row);
   });
+  
   var addBtn = document.createElement('button');
   addBtn.className = 'add-ticker-btn';
   addBtn.textContent = '+ Agregar ticker';
-  addBtn.onclick = addWatchlistTicker;
+  addBtn.onclick = addWatchTicker;
   editor.appendChild(addBtn);
 }
 
-function renderWatchlistCounter() {
-  var total = countWatchlistTickers();
-  var counter = document.getElementById('watchlistCounter');
-  counter.textContent = total + ' / ' + MAX_TICKERS_WATCHLIST_TOTAL + ' tickers en watchlists';
+function renderWatchCounter() {
+  var total = countTotalWatchTickers();
+  var counter = document.getElementById('watchCounter');
+  counter.textContent = total + ' / ' + MAX_WATCH_TICKERS_TOTAL + ' tickers de watchlist';
   counter.className = 'counter';
-  if (total >= MAX_TICKERS_WATCHLIST_TOTAL) counter.className = 'counter error';
-  else if (total >= MAX_TICKERS_WATCHLIST_TOTAL - 2) counter.className = 'counter warning';
+  if (total >= MAX_WATCH_TICKERS_TOTAL) counter.className = 'counter error';
+  else if (total >= MAX_WATCH_TICKERS_TOTAL - 2) counter.className = 'counter warning';
 }
 
 function addWatchlist() {
@@ -408,30 +563,32 @@ function addWatchlist() {
     return;
   }
   state.watchlists.push({ name: 'Watchlist ' + (state.watchlists.length + 1), tickers: [] });
-  state.wActiveIdx = state.watchlists.length - 1;
+  state.activeWatchIdx = state.watchlists.length - 1;
   render();
 }
 
 function deleteWatchlist(idx) {
   if (!confirm('¿Borrar esta watchlist? Se pierden todos sus tickers.')) return;
   state.watchlists.splice(idx, 1);
-  if (state.wActiveIdx >= state.watchlists.length) state.wActiveIdx = Math.max(0, state.watchlists.length - 1);
+  if (state.activeWatchIdx >= state.watchlists.length) state.activeWatchIdx = state.watchlists.length - 1;
   render();
 }
 
-function addWatchlistTicker() {
-  if (countWatchlistTickers() >= MAX_TICKERS_WATCHLIST_TOTAL) {
-    showStatus('error', 'Máximo ' + MAX_TICKERS_WATCHLIST_TOTAL + ' tickers en watchlists.');
+function addWatchTicker() {
+  if (countTotalWatchTickers() >= MAX_WATCH_TICKERS_TOTAL) {
+    showStatus('error', 'Máximo ' + MAX_WATCH_TICKERS_TOTAL + ' tickers de watchlist.');
     return;
   }
-  state.watchlists[state.wActiveIdx].tickers.push({ symbol: '' });
+  state.watchlists[state.activeWatchIdx].tickers.push({ symbol: '' });
   render();
 }
 
-function removeWatchlistTicker(idx) {
-  state.watchlists[state.wActiveIdx].tickers.splice(idx, 1);
+function removeWatchTicker(idx) {
+  state.watchlists[state.activeWatchIdx].tickers.splice(idx, 1);
   render();
 }
+
+// === COMMON ===
 
 function showStatus(type, msg) {
   var status = document.getElementById('status');
@@ -442,40 +599,43 @@ function showStatus(type, msg) {
 
 function validate() {
   var apiKey = document.getElementById('apiKey').value.trim();
-  if (!apiKey) { showStatus('error', 'Falta la API key de Finnhub'); return null; }
+  if (!apiKey) {
+    showStatus('error', 'Falta la API key de Finnhub');
+    return null;
+  }
   for (var i = 0; i < state.portfolios.length; i++) {
     var p = state.portfolios[i];
     if (!p.name || !p.name.trim()) {
       showStatus('error', 'El portfolio ' + (i + 1) + ' no tiene nombre');
-      state.pActiveIdx = i; render(); return null;
+      state.activeIdx = i; render(); return null;
     }
     for (var j = 0; j < p.tickers.length; j++) {
       var t = p.tickers[j];
       if (!t.symbol || !t.symbol.trim()) {
         showStatus('error', 'Hay un ticker sin símbolo en "' + p.name + '"');
-        state.pActiveIdx = i; render(); return null;
+        state.activeIdx = i; render(); return null;
       }
       if (!t.shares || t.shares <= 0) {
         showStatus('error', t.symbol + ' tiene shares inválidos');
-        state.pActiveIdx = i; render(); return null;
+        state.activeIdx = i; render(); return null;
       }
       if (!t.avgCost || t.avgCost <= 0) {
         showStatus('error', t.symbol + ' tiene avg cost inválido');
-        state.pActiveIdx = i; render(); return null;
+        state.activeIdx = i; render(); return null;
       }
     }
   }
-  for (var i = 0; i < state.watchlists.length; i++) {
-    var w = state.watchlists[i];
+  for (var k = 0; k < state.watchlists.length; k++) {
+    var w = state.watchlists[k];
     if (!w.name || !w.name.trim()) {
-      showStatus('error', 'La watchlist ' + (i + 1) + ' no tiene nombre');
-      state.wActiveIdx = i; render(); return null;
+      showStatus('error', 'La watchlist ' + (k + 1) + ' no tiene nombre');
+      state.activeWatchIdx = k; render(); return null;
     }
-    for (var j = 0; j < w.tickers.length; j++) {
-      var t = w.tickers[j];
-      if (!t.symbol || !t.symbol.trim()) {
+    for (var m = 0; m < w.tickers.length; m++) {
+      var wt = w.tickers[m];
+      if (!wt.symbol || !wt.symbol.trim()) {
         showStatus('error', 'Hay un ticker sin símbolo en "' + w.name + '"');
-        state.wActiveIdx = i; render(); return null;
+        state.activeWatchIdx = k; render(); return null;
       }
     }
   }
