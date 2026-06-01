@@ -360,13 +360,17 @@ let debugInfo = {
   hashLength: 0,
   parsed: false,
   alarmsInHash: 0,
-  alertsInHash: 0
+  alertsInHash: 0,
+  debugWVC: ''
 };
 
 function renderDebug() {
   var html = '';
   html += '<div>Hash: ' + debugInfo.hashLength + ' chars · Parse: ' + (debugInfo.parsed ? 'OK' : 'NO') + '</div>';
   html += '<div>Alarms in hash: ' + debugInfo.alarmsInHash + ' · Alerts: ' + debugInfo.alertsInHash + '</div>';
+  if (debugInfo.debugWVC) {
+    html += '<div style="background:#fff;padding:3px;font-size:9px;word-break:break-all;margin-top:4px;">WVC: ' + debugInfo.debugWVC + '</div>';
+  }
   try {
     var lastSave = localStorage.getItem('last_save_attempt');
     if (lastSave) {
@@ -407,6 +411,9 @@ function loadFromHash() {
     }
     if (typeof parsed.muteAlerts === 'boolean') {
       state.muteAlerts = parsed.muteAlerts;
+    }
+    if (parsed.debugWVC) {
+      debugInfo.debugWVC = parsed.debugWVC;
     }
   } catch (e) {}
 }
