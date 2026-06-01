@@ -272,6 +272,12 @@
 <h1>Stocky Settings</h1>
 <div class="subtitle">Configurá tu API key, portfolios y watchlists</div>
 
+<!-- DEBUG PANEL -->
+<div style="background:#fffbe6;border:2px solid #c97e0b;border-radius:8px;padding:10px;margin-bottom:12px;font-family:monospace;font-size:12px;">
+  <div style="font-weight:700;color:#c97e0b;margin-bottom:4px;">🔍 DEBUG</div>
+  <div id="debugContent">Cargando...</div>
+</div>
+
 <div id="status" class="status"></div>
 
 <!-- API KEY -->
@@ -350,12 +356,38 @@ let state = {
   activeWatchIdx: 0
 };
 
+let debugInfo = {
+  hashLength: 0,
+  parsed: false,
+  alarmsInHash: 0,
+  alertsInHash: 0
+};
+
+function renderDebug() {
+  var html = '';
+  html += '<div>Hash: ' + debugInfo.hashLength + ' chars · Parse: ' + (debugInfo.parsed ? 'OK' : 'NO') + '</div>';
+  html += '<div>Alarms in hash: ' + debugInfo.alarmsInHash + ' · Alerts: ' + debugInfo.alertsInHash + '</div>';
+  try {
+    var lastSave = localStorage.getItem('last_save_attempt');
+    if (lastSave) {
+      var ls = JSON.parse(lastSave);
+      html += '<div style="margin-top:4px;color:#666;font-size:10px;">Last save: ' + ls.ts.substring(11, 19) + ' · alarms:' + ls.alarms + '</div>';
+      if (ls.alarmData) {
+        html += '<div style="background:#fff;padding:3px;font-size:9px;word-break:break-all;">' + ls.alarmData + '</div>';
+      }
+    }
+  } catch(e) {}
+  document.getElementById('debugContent').innerHTML = html;
+}
+
 function loadFromHash() {
   try {
     var hash = window.location.hash.replace('#', '');
+    debugInfo.hashLength = hash.length;
     if (!hash) return;
     var decoded = decodeURIComponent(hash);
     var parsed = JSON.parse(decoded);
+    debugInfo.parsed = true;
     if (parsed.apiKey) state.apiKey = parsed.apiKey;
     if (parsed.portfolios && Array.isArray(parsed.portfolios)) {
       state.portfolios = parsed.portfolios;
@@ -367,9 +399,11 @@ function loadFromHash() {
     }
     if (parsed.alerts && Array.isArray(parsed.alerts)) {
       state.alerts = parsed.alerts;
+      debugInfo.alertsInHash = parsed.alerts.length;
     }
     if (parsed.alarms && Array.isArray(parsed.alarms)) {
       state.alarms = parsed.alarms;
+      debugInfo.alarmsInHash = parsed.alarms.length;
     }
     if (typeof parsed.muteAlerts === 'boolean') {
       state.muteAlerts = parsed.muteAlerts;
@@ -414,6 +448,7 @@ function render() {
   renderAlarms();
   renderAlarmsCounter();
   renderMute();
+  renderDebug();
 }
 
 // === PORTFOLIOS ===
@@ -982,6 +1017,14 @@ function validate() {
 function save() {
   var config = validate();
   if (!config) return;
+  // Track last save for debug
+  try {
+    localStorage.setItem('last_save_attempt', JSON.stringify({
+      ts: new Date().toISOString(),
+      alarms: state.alarms.length,
+      alarmData: JSON.stringify(state.alarms).substring(0, 200)
+    }));
+  } catch(e) {}
   var payload = JSON.stringify(config);
   var url = 'pebblejs://close#' + encodeURIComponent(payload);
   document.location.href = url;
