@@ -159,6 +159,59 @@
   .alert-row select { padding: 8px; font-size: 13px; }
   .alert-row .symbol-input { text-transform: uppercase; }
 
+  .alarm-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 32px;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .alarm-row input[type="time"] { padding: 8px; font-size: 14px; }
+  .alarm-days {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    padding-left: 100px;
+  }
+  .alarm-days button {
+    flex: 1;
+    padding: 6px 0;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 4px;
+    background: var(--bg2);
+    color: var(--dim);
+    border: 1px solid var(--border);
+  }
+  .alarm-days button.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .alarm-block {
+    background: var(--bg2);
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  /* Mute toggle */
+  #muteToggle:checked + #muteSlider { background-color: var(--primary) !important; }
+  #muteSlider:before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .2s;
+    border-radius: 50%;
+  }
+  #muteToggle:checked + #muteSlider:before {
+    transform: translateX(22px);
+  }
+
   .ticker-header {
     display: grid;
     grid-template-columns: 1fr 80px 100px 32px;
@@ -254,6 +307,23 @@
   </div>
 </div>
 
+<!-- ALARMS (Wakeup) -->
+<div class="section">
+  <div class="section-title">Alarmas (Daily Briefing)</div>
+  <div style="margin-bottom:10px;display:flex;align-items:center;gap:10px;">
+    <label style="margin:0;flex:1;">Silenciar alertas globalmente</label>
+    <label class="switch" style="position:relative;display:inline-block;width:48px;height:26px;">
+      <input type="checkbox" id="muteToggle" style="opacity:0;width:0;height:0;">
+      <span id="muteSlider" style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d8dde2;transition:.2s;border-radius:26px;"></span>
+    </label>
+  </div>
+  <div id="alarmsEditor"></div>
+  <div class="counter" id="alarmsCounter">0 / 10 alarmas</div>
+  <div style="margin-top:14px;padding:10px 12px;background:#f5f7fa;border-left:3px solid var(--primary);border-radius:4px;font-size:12px;color:var(--dim);line-height:1.5;">
+    Las alarmas hacen vibrar tu reloj y abren Stocky en los horarios elegidos. El reloj refresca los datos y, si hay alertas disparadas, las muestra antes del resumen.
+  </div>
+</div>
+
 <!-- SAVE -->
 <div class="save-bar">
   <button class="btn-secondary" onclick="cancelChanges()">Cancelar</button>
@@ -266,12 +336,16 @@ const MAX_TICKERS_TOTAL = 20;
 const MAX_WATCHLISTS = 3;
 const MAX_WATCH_TICKERS_TOTAL = 10;
 const MAX_ALERTS = 30;
+const MAX_ALARMS = 10;
+const DAY_LABELS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 
 let state = {
   apiKey: '',
   portfolios: [],
   watchlists: [],
   alerts: [],
+  alarms: [],
+  muteAlerts: false,
   activeIdx: 0,
   activeWatchIdx: 0
 };
@@ -293,6 +367,12 @@ function loadFromHash() {
     }
     if (parsed.alerts && Array.isArray(parsed.alerts)) {
       state.alerts = parsed.alerts;
+    }
+    if (parsed.alarms && Array.isArray(parsed.alarms)) {
+      state.alarms = parsed.alarms;
+    }
+    if (typeof parsed.muteAlerts === 'boolean') {
+      state.muteAlerts = parsed.muteAlerts;
     }
   } catch (e) {}
 }
@@ -331,6 +411,9 @@ function render() {
   renderWatchCounter();
   renderAlerts();
   renderAlertsCounter();
+  renderAlarms();
+  renderAlarmsCounter();
+  renderMute();
 }
 
 // === PORTFOLIOS ===
@@ -708,6 +791,107 @@ function removeAlert(idx) {
   render();
 }
 
+// === ALARMS ===
+
+function renderAlarms() {
+  var editor = document.getElementById('alarmsEditor');
+  editor.innerHTML = '';
+  
+  if (state.alarms.length === 0) {
+    var hint = document.createElement('div');
+    hint.style.cssText = 'color:var(--dim);font-size:13px;padding:8px 0;';
+    hint.textContent = 'No tenes alarmas. Apreta "+ Nueva alarma" para empezar.';
+    editor.appendChild(hint);
+  }
+  
+  state.alarms.forEach(function(al, idx) {
+    var block = document.createElement('div');
+    block.className = 'alarm-block';
+    
+    // Fila: time input + label + remove
+    var row = document.createElement('div');
+    row.className = 'alarm-row';
+    
+    var timeLabel = document.createElement('label');
+    timeLabel.textContent = 'Hora';
+    timeLabel.style.margin = '0';
+    row.appendChild(timeLabel);
+    
+    var timeInput = document.createElement('input');
+    timeInput.type = 'time';
+    timeInput.value = al.time || '09:30';
+    timeInput.oninput = function() { al.time = this.value; };
+    row.appendChild(timeInput);
+    
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-icon';
+    removeBtn.innerHTML = '×';
+    removeBtn.onclick = function() { removeAlarm(idx); };
+    row.appendChild(removeBtn);
+    
+    block.appendChild(row);
+    
+    // Dias de la semana
+    var daysRow = document.createElement('div');
+    daysRow.className = 'alarm-days';
+    if (!al.days) al.days = [false, false, false, false, false, false, false];
+    for (var d = 0; d < 7; d++) {
+      (function(dayIdx) {
+        var b = document.createElement('button');
+        b.textContent = DAY_LABELS[dayIdx];
+        if (al.days[dayIdx]) b.className = 'active';
+        b.onclick = function() {
+          al.days[dayIdx] = !al.days[dayIdx];
+          render();
+        };
+        daysRow.appendChild(b);
+      })(d);
+    }
+    block.appendChild(daysRow);
+    
+    editor.appendChild(block);
+  });
+  
+  if (state.alarms.length < MAX_ALARMS) {
+    var addBtn = document.createElement('button');
+    addBtn.className = 'add-ticker-btn';
+    addBtn.textContent = '+ Nueva alarma';
+    addBtn.onclick = addAlarm;
+    editor.appendChild(addBtn);
+  }
+}
+
+function renderAlarmsCounter() {
+  var total = state.alarms.length;
+  var counter = document.getElementById('alarmsCounter');
+  counter.textContent = total + ' / ' + MAX_ALARMS + ' alarmas';
+  counter.className = 'counter';
+  if (total >= MAX_ALARMS) counter.className = 'counter error';
+}
+
+function addAlarm() {
+  if (state.alarms.length >= MAX_ALARMS) {
+    showStatus('error', 'Maximo ' + MAX_ALARMS + ' alarmas');
+    return;
+  }
+  state.alarms.push({
+    time: '09:30',
+    days: [true, true, true, true, true, false, false]  // L-V por default
+  });
+  render();
+}
+
+function removeAlarm(idx) {
+  state.alarms.splice(idx, 1);
+  render();
+}
+
+// === MUTE ===
+
+function renderMute() {
+  document.getElementById('muteToggle').checked = state.muteAlerts;
+}
+
 // === COMMON ===
 
 function showStatus(type, msg) {
@@ -770,7 +954,29 @@ function validate() {
       return null;
     }
   }
-  return { apiKey: apiKey, portfolios: state.portfolios, watchlists: state.watchlists, alerts: state.alerts };
+  for (var ak = 0; ak < state.alarms.length; ak++) {
+    var alm = state.alarms[ak];
+    if (!alm.time || !/^\d{2}:\d{2}$/.test(alm.time)) {
+      showStatus('error', 'Alarma ' + (ak + 1) + ' tiene hora invalida');
+      return null;
+    }
+    var anyDay = false;
+    for (var dd = 0; dd < 7; dd++) {
+      if (alm.days && alm.days[dd]) { anyDay = true; break; }
+    }
+    if (!anyDay) {
+      showStatus('error', 'Alarma de las ' + alm.time + ' no tiene dias seleccionados');
+      return null;
+    }
+  }
+  return {
+    apiKey: apiKey,
+    portfolios: state.portfolios,
+    watchlists: state.watchlists,
+    alerts: state.alerts,
+    alarms: state.alarms,
+    muteAlerts: state.muteAlerts
+  };
 }
 
 function save() {
@@ -790,6 +996,10 @@ render();
 
 document.getElementById('apiKey').addEventListener('input', function() {
   state.apiKey = this.value;
+});
+
+document.getElementById('muteToggle').addEventListener('change', function() {
+  state.muteAlerts = this.checked;
 });
 </script>
 
