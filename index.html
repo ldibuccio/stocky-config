@@ -148,6 +148,17 @@
   .watch-row input { padding: 8px; font-size: 14px; }
   .watch-row .symbol-input { text-transform: uppercase; }
 
+  .alert-row {
+    display: grid;
+    grid-template-columns: 90px 130px 1fr 32px;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .alert-row input,
+  .alert-row select { padding: 8px; font-size: 13px; }
+  .alert-row .symbol-input { text-transform: uppercase; }
+
   .ticker-header {
     display: grid;
     grid-template-columns: 1fr 80px 100px 32px;
@@ -233,6 +244,13 @@
   <div class="counter" id="watchCounter">0 / 10 tickers de watchlist</div>
 </div>
 
+<!-- ALERTS -->
+<div class="section">
+  <div class="section-title">Alertas de precio</div>
+  <div id="alertsEditor"></div>
+  <div class="counter" id="alertsCounter">0 / 30 alertas</div>
+</div>
+
 <!-- SAVE -->
 <div class="save-bar">
   <button class="btn-secondary" onclick="cancelChanges()">Cancelar</button>
@@ -244,11 +262,13 @@ const MAX_PORTFOLIOS = 5;
 const MAX_TICKERS_TOTAL = 20;
 const MAX_WATCHLISTS = 3;
 const MAX_WATCH_TICKERS_TOTAL = 10;
+const MAX_ALERTS = 30;
 
 let state = {
   apiKey: '',
   portfolios: [],
   watchlists: [],
+  alerts: [],
   activeIdx: 0,
   activeWatchIdx: 0
 };
@@ -267,6 +287,9 @@ function loadFromHash() {
     }
     if (parsed.watchlists && Array.isArray(parsed.watchlists)) {
       state.watchlists = parsed.watchlists;
+    }
+    if (parsed.alerts && Array.isArray(parsed.alerts)) {
+      state.alerts = parsed.alerts;
     }
   } catch (e) {}
 }
@@ -303,6 +326,8 @@ function render() {
   renderWatchTabs();
   renderWatchEditor();
   renderWatchCounter();
+  renderAlerts();
+  renderAlertsCounter();
 }
 
 // === PORTFOLIOS ===
@@ -588,6 +613,98 @@ function removeWatchTicker(idx) {
   render();
 }
 
+// === ALERTS ===
+
+var ALERT_TYPES = [
+  { value: 'price_above', label: 'Precio sube de' },
+  { value: 'price_below', label: 'Precio baja de' },
+  { value: 'pct_above',   label: 'Suba mas de %' },
+  { value: 'pct_below',   label: 'Baje mas de %' }
+];
+
+function renderAlerts() {
+  var editor = document.getElementById('alertsEditor');
+  editor.innerHTML = '';
+  
+  if (state.alerts.length === 0) {
+    var hint = document.createElement('div');
+    hint.style.cssText = 'color:var(--dim);font-size:13px;padding:8px 0;';
+    hint.textContent = 'No tenes alertas. Apreta "+ Nueva alerta" para empezar.';
+    editor.appendChild(hint);
+  }
+  
+  state.alerts.forEach(function(a, idx) {
+    var row = document.createElement('div');
+    row.className = 'alert-row';
+    
+    var symbolInput = document.createElement('input');
+    symbolInput.type = 'text';
+    symbolInput.className = 'symbol-input';
+    symbolInput.value = a.symbol;
+    symbolInput.placeholder = 'AAPL';
+    symbolInput.maxLength = 8;
+    symbolInput.oninput = function() { a.symbol = this.value.toUpperCase(); };
+    row.appendChild(symbolInput);
+    
+    var typeSelect = document.createElement('select');
+    ALERT_TYPES.forEach(function(t) {
+      var opt = document.createElement('option');
+      opt.value = t.value;
+      opt.textContent = t.label;
+      if (a.type === t.value) opt.selected = true;
+      typeSelect.appendChild(opt);
+    });
+    typeSelect.onchange = function() { a.type = this.value; };
+    row.appendChild(typeSelect);
+    
+    var valueInput = document.createElement('input');
+    valueInput.type = 'number';
+    valueInput.value = a.value;
+    valueInput.placeholder = '200';
+    valueInput.step = '0.01';
+    valueInput.min = '0';
+    valueInput.oninput = function() { a.value = parseFloat(this.value) || 0; };
+    row.appendChild(valueInput);
+    
+    var removeBtn = document.createElement('button');
+    removeBtn.className = 'btn-icon';
+    removeBtn.innerHTML = '×';
+    removeBtn.onclick = function() { removeAlert(idx); };
+    row.appendChild(removeBtn);
+    
+    editor.appendChild(row);
+  });
+  
+  var addBtn = document.createElement('button');
+  addBtn.className = 'add-ticker-btn';
+  addBtn.textContent = '+ Nueva alerta';
+  addBtn.onclick = addAlert;
+  editor.appendChild(addBtn);
+}
+
+function renderAlertsCounter() {
+  var total = state.alerts.length;
+  var counter = document.getElementById('alertsCounter');
+  counter.textContent = total + ' / ' + MAX_ALERTS + ' alertas';
+  counter.className = 'counter';
+  if (total >= MAX_ALERTS) counter.className = 'counter error';
+  else if (total >= MAX_ALERTS - 3) counter.className = 'counter warning';
+}
+
+function addAlert() {
+  if (state.alerts.length >= MAX_ALERTS) {
+    showStatus('error', 'Maximo ' + MAX_ALERTS + ' alertas');
+    return;
+  }
+  state.alerts.push({ symbol: '', type: 'price_above', value: 0, lastFiredDate: '' });
+  render();
+}
+
+function removeAlert(idx) {
+  state.alerts.splice(idx, 1);
+  render();
+}
+
 // === COMMON ===
 
 function showStatus(type, msg) {
@@ -639,7 +756,18 @@ function validate() {
       }
     }
   }
-  return { apiKey: apiKey, portfolios: state.portfolios, watchlists: state.watchlists };
+  for (var aa = 0; aa < state.alerts.length; aa++) {
+    var al = state.alerts[aa];
+    if (!al.symbol || !al.symbol.trim()) {
+      showStatus('error', 'Hay una alerta sin simbolo (alerta ' + (aa + 1) + ')');
+      return null;
+    }
+    if (!al.value || al.value <= 0) {
+      showStatus('error', 'Alerta de ' + al.symbol + ' tiene valor invalido');
+      return null;
+    }
+  }
+  return { apiKey: apiKey, portfolios: state.portfolios, watchlists: state.watchlists, alerts: state.alerts };
 }
 
 function save() {
