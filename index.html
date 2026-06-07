@@ -395,6 +395,37 @@ function countTotalWatchTickers() {
   return total;
 }
 
+// Detecta la moneda según el sufijo del símbolo
+function getCurrencyForSymbol(symbol) {
+  if (!symbol) return null;  // vacío: sin moneda definida todavía
+  var s = symbol.toUpperCase();
+  var dotIdx = s.indexOf('.');
+  if (dotIdx === -1) return 'USD';  // sin sufijo = US
+  var suffix = s.substring(dotIdx);
+  var map = {
+    '.BA': 'ARS',   // Argentina (BYMA)
+    '.SA': 'BRL',   // Brasil
+    '.L':  'GBP',   // Londres
+    '.PA': 'EUR', '.DE': 'EUR', '.AS': 'EUR', '.MI': 'EUR', '.MC': 'EUR',
+    '.SW': 'CHF',   // Suiza
+    '.MX': 'MXN',   // México
+    '.TO': 'CAD',   // Canadá
+    '.HK': 'HKD',   // Hong Kong
+    '.T':  'JPY'    // Japón
+  };
+  return map[suffix] || 'USD';
+}
+
+// Devuelve la moneda dominante de un portfolio (la del primer ticker con símbolo no vacío)
+function getPortfolioCurrency(portfolio, excludeIdx) {
+  for (var i = 0; i < portfolio.tickers.length; i++) {
+    if (excludeIdx !== undefined && i === excludeIdx) continue;
+    var cur = getCurrencyForSymbol(portfolio.tickers[i].symbol);
+    if (cur) return cur;
+  }
+  return null;  // portfolio vacío o sin símbolos
+}
+
 function render() {
   ensureAtLeastOnePortfolio();
   if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
@@ -497,6 +528,22 @@ function renderEditor() {
     symbolInput.placeholder = 'AAPL';
     symbolInput.maxLength = 8;
     symbolInput.oninput = function() { t.symbol = this.value.toUpperCase(); };
+    symbolInput.onblur = function() {
+      var newSym = this.value.toUpperCase().trim();
+      if (!newSym) { t.symbol = ''; return; }
+      var newCur = getCurrencyForSymbol(newSym);
+      // Moneda de los OTROS tickers del portfolio (excluyendo este)
+      var portCur = getPortfolioCurrency(p, idx);
+      if (portCur && newCur && portCur !== newCur) {
+        showStatus('error', 'Este portfolio es ' + portCur + '. No podés mezclar ' + newCur +
+          '. Creá otro portfolio para ' + newCur + '.');
+        // Revertir
+        t.symbol = '';
+        this.value = '';
+        return;
+      }
+      t.symbol = newSym;
+    };
     row.appendChild(symbolInput);
     var sharesInput = document.createElement('input');
     sharesInput.type = 'number';
@@ -913,6 +960,7 @@ function validate() {
       showStatus('error', 'El portfolio ' + (i + 1) + ' no tiene nombre');
       state.activeIdx = i; render(); return null;
     }
+    var portfolioCurrency = null;  // moneda detectada del primer ticker
     for (var j = 0; j < p.tickers.length; j++) {
       var t = p.tickers[j];
       if (!t.symbol || !t.symbol.trim()) {
@@ -925,6 +973,15 @@ function validate() {
       }
       if (!t.avgCost || t.avgCost <= 0) {
         showStatus('error', t.symbol + ' tiene avg cost inválido');
+        state.activeIdx = i; render(); return null;
+      }
+      // Validación de moneda única por portfolio
+      var tCur = getCurrencyForSymbol(t.symbol);
+      if (portfolioCurrency === null) {
+        portfolioCurrency = tCur;
+      } else if (tCur !== portfolioCurrency) {
+        showStatus('error', '"' + p.name + '" mezcla ' + portfolioCurrency + ' y ' + tCur +
+          '. Un portfolio sólo puede tener una moneda.');
         state.activeIdx = i; render(); return null;
       }
     }
