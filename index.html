@@ -535,8 +535,7 @@ function renderEditor() {
       // Moneda de los OTROS tickers del portfolio (excluyendo este)
       var portCur = getPortfolioCurrency(p, idx);
       if (portCur && newCur && portCur !== newCur) {
-        showStatus('error', 'Este portfolio es ' + portCur + '. No podés mezclar ' + newCur +
-          '. Creá otro portfolio para ' + newCur + '.');
+        alert('⚠️ Moneda incompatible\n\nEste portfolio es ' + portCur + '.\nNo podés mezclar ' + newCur + ' en el mismo portfolio.\n\nCreá otro portfolio para tickers en ' + newCur + '.');
         // Revertir
         t.symbol = '';
         this.value = '';
@@ -980,8 +979,7 @@ function validate() {
       if (portfolioCurrency === null) {
         portfolioCurrency = tCur;
       } else if (tCur !== portfolioCurrency) {
-        showStatus('error', '"' + p.name + '" mezcla ' + portfolioCurrency + ' y ' + tCur +
-          '. Un portfolio sólo puede tener una moneda.');
+        alert('⚠️ Moneda incompatible\n\n"' + p.name + '" mezcla ' + portfolioCurrency + ' y ' + tCur + '.\n\nUn portfolio sólo puede tener una moneda. Separá los tickers en portfolios distintos.');
         state.activeIdx = i; render(); return null;
       }
     }
