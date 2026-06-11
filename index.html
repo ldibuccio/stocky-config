@@ -380,6 +380,16 @@
   </div>
 </div>
 
+<!-- MODAL CONFIRM (reemplaza confirm() que el webview de Pebble no soporta) -->
+<div id="confirmOverlay" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="confirmTitle">Confirmar</div>
+    <div class="modal-msg" id="confirmMsg"></div>
+    <button id="confirmOkBtn" style="background:var(--red);margin-bottom:8px;">Borrar</button>
+    <button onclick="closeConfirm()" style="background:var(--bg2);color:var(--text);border:1px solid var(--border);">Cancelar</button>
+  </div>
+</div>
+
 <script>
 const MAX_PORTFOLIOS = 5;
 const MAX_TICKERS_TOTAL = 20;
@@ -408,6 +418,20 @@ function showModal(title, msg) {
 }
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('show');
+}
+
+function showConfirm(title, msg, onConfirm) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  var okBtn = document.getElementById('confirmOkBtn');
+  okBtn.onclick = function() {
+    closeConfirm();
+    onConfirm();
+  };
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
 }
 
 function loadFromHash() {
@@ -661,10 +685,13 @@ function deletePortfolio(idx) {
     showStatus('error', 'Necesitás al menos un portfolio');
     return;
   }
-  if (!confirm('¿Borrar este portfolio? Se pierden todos sus tickers.')) return;
-  state.portfolios.splice(idx, 1);
-  if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
-  render();
+  showConfirm('Borrar portfolio',
+    '¿Borrar este portfolio? Se pierden todos sus tickers.',
+    function() {
+      state.portfolios.splice(idx, 1);
+      if (state.activeIdx >= state.portfolios.length) state.activeIdx = state.portfolios.length - 1;
+      render();
+    });
 }
 
 function addTicker() {
@@ -787,10 +814,13 @@ function addWatchlist() {
 }
 
 function deleteWatchlist(idx) {
-  if (!confirm('¿Borrar esta watchlist? Se pierden todos sus tickers.')) return;
-  state.watchlists.splice(idx, 1);
-  if (state.activeWatchIdx >= state.watchlists.length) state.activeWatchIdx = state.watchlists.length - 1;
-  render();
+  showConfirm('Borrar watchlist',
+    '¿Borrar esta watchlist? Se pierden todos sus tickers.',
+    function() {
+      state.watchlists.splice(idx, 1);
+      if (state.activeWatchIdx >= state.watchlists.length) state.activeWatchIdx = state.watchlists.length - 1;
+      render();
+    });
 }
 
 function addWatchTicker() {
